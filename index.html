@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نشاط تفاعلي: خوارزمية وخريطة تدفق مساحة الدائرة</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Tajawal', sans-serif;
+            background-color: #fce4ec;
+            color: #4a148c;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #d81b60;
+            text-shadow: 2px 2px #f8bbd0;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+            border: 5px dashed #ab47bc;
+        }
+        
+        /* تصميم قسم بيانات الطالبة والدرجة */
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff3e0;
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 3px solid #ffb74d;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .input-group input {
+            padding: 10px;
+            border: 2px solid #ab47bc;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            width: 200px;
+        }
+        .input-group input:focus {
+            border-color: #d81b60;
+            box-shadow: 0 0 5px rgba(216, 27, 96, 0.5);
+        }
+        .score-board {
+            font-size: 22px;
+            font-weight: bold;
+            color: #d81b60;
+            background-color: #fce4ec;
+            padding: 10px 25px;
+            border-radius: 12px;
+            border: 2px dashed #f8bbd0;
+        }
+
+        .instructions {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #00838f;
+        }
+        .activity-area {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .steps-container {
+            flex: 2;
+        }
+        .step-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #e1f5fe;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            border-right: 8px solid #29b6f6;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .drop-zone {
+            width: 160px;
+            height: 70px;
+            border: 3px dashed #b0bec5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+        }
+        .shapes-container {
+            flex: 1;
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid #ffb74d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* تصميم الأشكال الهندسية */
+        .shape {
+            width: 140px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            font-size: 14px;
+        }
+        .shape:active {
+            cursor: grabbing;
+        }
+        /* الشكل البيضاوي - Start/End */
+        .oval {
+            background-color: #ec407a;
+            border-radius: 50px;
+        }
+        /* متوازي الأضلاع - Input/Output */
+        .parallelogram {
+            background-color: #ab47bc;
+            transform: skew(-20deg);
+        }
+        .parallelogram span {
+            transform: skew(20deg);
+        }
+        /* المستطيل - Process */
+        .rectangle {
+            background-color: #26a69a;
+            border-radius: 5px;
+        }
+
+        #successMessage {
+            display: none;
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #c8e6c9;
+            color: #2e7d32;
+            border-radius: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            border: 3px dashed #4caf50;
+            animation: pop 0.5s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>✨ تحدي بناء خريطة التدفق ✨</h1>
+    
+    <div class="container">
+        
+        <!-- قسم بيانات الطالبة والدرجة -->
+        <div class="student-info">
+            <div class="input-group">
+                <input type="text" id="studentName" placeholder="اسم المبرمجة المبدعة">
+                <input type="text" id="studentClass" placeholder="الصف (مثال: العاشر أ)">
+            </div>
+            <div class="score-board">
+                الدرجة: <span id="scoreDisplay">0</span> / 5
+            </div>
+        </div>
+
+        <p class="instructions">اكتبي اسمك وصفك في الأعلى أولاً. ثم أمامكِ خطوات خوارزمية برنامج حساب مساحة الدائرة مرتبة تسلسلياً[cite: 1].<br> <b>المهمة:</b> اسحبي الشكل الهندسي المناسب من اليسار وأفلتيه في المربع الفارغ بجانب الخطوة المناسبة لتكوين خريطة التدفق[cite: 1].</p>
+
+        <div class="activity-area">
+            <!-- قائمة الخطوات الخوارزمية مع مناطق الإفلات -->
+            <div class="steps-container">
+                <div class="step-row">
+                    <span>1. بداية البرنامج[cite: 1].</span>
+                    <div class="drop-zone" data-expected="oval" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                </div>
+                <div class="step-row">
+                    <span>2. استقبال من المستخدم قيمة نصف قطر الدائرة[cite: 1].</span>
+                    <div class="drop-zone" data-expected="parallelogram" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                </div>
+                <div class="step-row">
+                    <span>3. حساب مساحة الدائرة مستعينا بالمعادلة: A = π r²[cite: 1].</span>
+                    <div class="drop-zone" data-expected="rectangle" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                </div>
+                <div class="step-row">
+                    <span>4. عرض مساحة الدائرة على الشاشة[cite: 1].</span>
+                    <div class="drop-zone" data-expected="parallelogram" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                </div>
+                <div class="step-row">
+                    <span>5. نهاية البرنامج[cite: 1].</span>
+                    <div class="drop-zone" data-expected="oval" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                </div>
+            </div>
+
+            <!-- الأشكال القابلة للسحب -->
+            <div class="shapes-container" id="shapesBank">
+                <h3>الأشكال (Flowchart Symbols)</h3>
+                <!-- أشكال مبعثرة للنشاط -->
+                <div class="shape parallelogram" draggable="true" ondragstart="drag(event)" id="shape1" data-type="parallelogram"><span>Input/Output<br>إدخال/إخراج[cite: 1]</span></div>
+                <div class="shape oval" draggable="true" ondragstart="drag(event)" id="shape2" data-type="oval"><span>End/Start<br>بداية/نهاية[cite: 1]</span></div>
+                <div class="shape rectangle" draggable="true" ondragstart="drag(event)" id="shape3" data-type="rectangle"><span>Process<br>عملية[cite: 1]</span></div>
+                <div class="shape oval" draggable="true" ondragstart="drag(event)" id="shape4" data-type="oval"><span>End/Start<br>بداية/نهاية[cite: 1]</span></div>
+                <div class="shape parallelogram" draggable="true" ondragstart="drag(event)" id="shape5" data-type="parallelogram"><span>Input/Output<br>إدخال/إخراج[cite: 1]</span></div>
+            </div>
+        </div>
+
+        <div id="successMessage"></div>
+    </div>
+
+    <script>
+        let score = 0; // متغير لتخزين الدرجة
+
+        // السماح بالإفلات
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        // بدء سحب العنصر
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+            ev.dataTransfer.setData("type", ev.target.getAttribute("data-type"));
+        }
+
+        // إفلات العنصر
+        function drop(ev) {
+            ev.preventDefault();
+            let draggedId = ev.dataTransfer.getData("text");
+            let draggedType = ev.dataTransfer.getData("type");
+            
+            // تحديد العنصر الهدف (منطقة الإفلات)
+            let dropZone = ev.target;
+            // إذا كان الإفلات فوق العنصر المسحوب نفسه داخل المنطقة، نتأكد من الوصول للأب
+            if (!dropZone.classList.contains('drop-zone')) {
+                dropZone = dropZone.closest('.drop-zone');
+            }
+
+            if (!dropZone) return;
+
+            let expectedType = dropZone.getAttribute("data-expected");
+
+            // التحقق مما إذا كان الشكل يناسب الخطوة
+            if (draggedType === expectedType && dropZone.children.length === 0) {
+                let draggedElement = document.getElementById(draggedId);
+                dropZone.appendChild(draggedElement);
+                dropZone.style.borderColor = "#4caf50"; // تحويل لون الإطار للأخضر عند الإجابة الصحيحة
+                dropZone.style.backgroundColor = "#e8f5e9";
+                draggedElement.setAttribute('draggable', 'false'); // إيقاف السحب بعد وضعه في المكان الصحيح
+                draggedElement.style.cursor = 'default';
+                
+                // زيادة الدرجة وتحديثها في الشاشة
+                score++;
+                document.getElementById('scoreDisplay').innerText = score;
+                
+                checkWin();
+            } else if (dropZone.children.length === 0) {
+                // تلميح عند الخطأ
+                dropZone.style.borderColor = "#f44336";
+                setTimeout(() => {
+                    dropZone.style.borderColor = "#b0bec5";
+                }, 1000);
+            }
+        }
+
+        // التحقق من اكتمال النشاط بنجاح
+        function checkWin() {
+            if (score === 5) {
+                // جلب اسم الطالبة أو وضع نص افتراضي إذا تُرك فارغاً
+                let studentName = document.getElementById('studentName').value.trim();
+                if(studentName === "") {
+                    studentName = "يا بطلة";
+                }
+                
+                let msgElement = document.getElementById('successMessage');
+                msgElement.innerHTML = `🎉 عمل رائع ${studentName}! لقد نجحتِ في بناء خريطة التدفق بشكل صحيح وحصلتِ على الدرجة النهائية 5/5! 🌟`;
+                msgElement.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
